@@ -138,7 +138,7 @@ For the topic, I chose to make a study tracker web app. As a college student maj
 - **Backend:** Python, Flask, Jinja, bcrypt, SQL
 - **Database:** MySQL, phpMyAdmin
 - **Tools and Utilities:** XAMPP, pip, VSCode, ChatGPT
-- **Testing and Debugging:** Microsoft Edg
+- **Testing and Debugging:** Microsoft Edge
 
 ## Future Enhancements
 - Add email verification for account creation
