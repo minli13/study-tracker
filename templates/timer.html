@@ -1,0 +1,254 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Timer
+{% endblock %}
+
+
+
+{% block body %}
+
+
+<div class="timer-tasks-container">
+    <div class="timer-container">
+        <h1>Timer</h1>
+        <div id="timer">15:00</div>
+        <div class="control-buttons">
+            <button id="startTimer" onclick="startTimer()" class="btn btn-primary">
+                Start
+            </button>
+            <button id="pauseResume" onclick="togglePauseResume()" class="btn btn-primary">
+                Pause
+            </button>
+            <button id="restart" onclick="restartTimer()" class="btn btn-primary">
+                Restart
+            </button>
+            <button onclick="chooseTime()" class="btn btn-primary">
+                Choose Time
+            </button>
+        </div>
+    </div>
+
+    <div class="tasks-list">
+        <!-- Display tasks -->
+        <h1>To do list</h1>
+        <form action="/timer" method="POST">
+            <div class="tasks-flex-container">
+                <table style="width:100%" method="GET">
+                    <thead>
+                        <tr>
+                            <th>Tasks</th>
+                            <th>Due date</th>
+                            <th>Tags</th>
+                            <th id="completion-header">Completion</th>
+                        </tr>
+                    </thead>
+
+                    <!-- Display tasks -->
+                    {% for task in tasks %}
+                        <tr class="{% if task[5] == 1 %}completed{% else %}not-completed{% endif %}">
+                            <td>{{ task[2] }}</td>
+                            <td>{{ task[3] }}</td>
+                            <td>{{ task[4] }}</td>
+                            <td class="completion-check"><input name="completion" value="{{ task[0] }}" type="checkbox" data-task-id={{ task[0] }} class="task-checkbox" {% if task[5] == 1 %}checked{% endif %}></td>
+                            <td class="completion-date" style="display:none">{{ task[6] }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <div>
+                    <button type="submit" onclick="updateTaskIds(event)" value="update_table" id="update-button" class="btn btn-primary">Update table</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Javascript -->
+<script>
+    // UPDATE TASKS
+    
+    // Get all previous checked 19
+    let previousCheckedTasks = new Set();
+
+    function queryCompletedTasks() {
+        document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+            const taskId = checkbox.dataset.taskId;
+            previousCheckedTasks.add(taskId); 
+        });
+        console.log("These are the previous checked tasks: ");
+        console.log(previousCheckedTasks);
+    }
+    queryCompletedTasks();
+
+    // Read user's checks
+    let currentCheckedTasks = new Set();
+    function setupCheckboxListeners() {
+        // Loop through each checkbox and attach the event listener
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', () => {
+                // Clear the set before updating it
+                currentCheckedTasks.clear();
+                // Get all checked checkboxes
+                document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+                    let checkedTaskId = checkbox.dataset.taskId;
+                    currentCheckedTasks.add(checkedTaskId);
+                });
+                console.log("These are the current checked tasks: ");
+                console.log(currentCheckedTasks);
+            });
+        });
+    }
+
+    // Set up the event listeners
+    setupCheckboxListeners();
+
+    // Log the checked tasks (though, note this won't reflect real-time changes)
+    console.log("Initial checked tasks: ", currentCheckedTasks);
+
+    
+    // Send only the updated tasks (newly checked or unchecked)
+    function updateTaskIds(event) {
+        event.preventDefault(); // Prevent the default form submission
+        let changedTasks = new Set(); 
+        for (let elem of currentCheckedTasks) { 
+            if (!previousCheckedTasks.has(elem)) {
+                changedTasks.add(elem); 
+            } 
+        } 
+        console.log(changedTasks);
+        updateDatabase(document.querySelector('form'), changedTasks);
+    }
+
+    // Update the database with the task IDs (now update the main route to persist the changes)
+    function updateDatabase(form, changedTasks) {
+        // Convert the set to an array
+        let updatedTaskIds = Array.from(changedTasks)
+        console.log(updatedTaskIds);
+        fetch('/update_database', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ taskIds: updatedTaskIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Database update response:", data);
+            // Handle the response, maybe update the UI or display success/error message
+            // Manually submit the form after updating the database 
+            form.submit();
+        })
+        .catch(err => console.error("Error updating database:", err));
+    }
+
+    // TIMER
+    // script.js
+    let timer;
+    let minutes = 15;
+    let seconds = 0;
+    let isPaused = false;
+    let enteredTime = null;
+    const timerElement = document.getElementById('timer');
+    let startBtn;
+    // Disable pause and restart buttons
+    let pauseResumeButton = document.getElementById('pauseResume');
+    pauseResumeButton.disabled = true;
+    let restartBtn = document.getElementById('restart');
+    restartBtn.disabled = true;
+
+    function startTimer() {
+        timer = setInterval(updateTimer, 1000); // Calls updateTimer every second
+        startBtn = document.getElementById('startTimer');
+        startBtn.disabled = true;
+        // Enable buttons
+        pauseResumeButton.disabled = false;
+        restartBtn.disabled = false;
+    }
+
+    function updateTimer() {
+        // Format time
+        //const timerElement = document.getElementById('timer');
+        // Update display
+        timerElement.textContent = formatTime(minutes, seconds);
+
+        // Reset time when time is 0
+        if (minutes === 0 && seconds === 0) {
+            clearInterval(timer);
+            startBtn.disabled = false;
+            alert('Time is up! Take a break.');
+        } 
+        // Decrement seconds
+        else if (!isPaused) {
+            if (seconds > 0) {
+                seconds--;
+            } else {
+                seconds = 59;
+                minutes--;
+            }
+        }
+    }
+
+    // Format time as MM:SS
+    function formatTime(minutes, seconds) {
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    // Toggle pause and resume
+    function togglePauseResume() {
+        let pauseResumeButton = document.getElementById('pauseResume');
+
+        isPaused = !isPaused;
+
+        if (isPaused) {
+            pauseTimer();
+            pauseResumeButton.textContent = 'Resume';
+        } else {
+            startTimer(); // Resumes timer
+            pauseResumeButton.textContent = 'Pause';
+        }
+    }
+
+    function pauseTimer() {
+        clearInterval(timer); // Stop the interval
+        timer = null; // Clear the interval ID
+        //isPaused = true; // Mark as paused
+    }
+
+    function resumeTimer() {
+        if (isPaused) {
+            startTimer(); // Resume by restarting the interval
+            isPaused = false;
+        }
+    }
+
+    function restartTimer() {
+        clearInterval(timer)
+        minutes = enteredTime || 15;
+        seconds = 0;
+        isPaused = false;
+        timerElement.textContent = formatTime(minutes, seconds);
+        pauseResumeButton.textContent = 'Pause';
+        startBtn.disabled = false;
+        pauseResumeButton.disabled = true;
+        restartBtn.disabled = true;
+    }
+
+    
+    function chooseTime() {
+        const newTime = prompt('Enter new time in minutes:');
+        if (!isNaN(newTime) && newTime > 0) {
+            enteredTime = parseInt(newTime);
+            minutes = enteredTime;
+            seconds = 0;
+            isPaused = false;
+            timerElement.textContent = formatTime(minutes, seconds);
+            clearInterval(timer);
+            pauseResumeButton.textContent = 'Pause';
+            startBtn.disabled = false;
+            pauseResumeButton.disabled = true;
+            restartBtn.disabled = true;
+        } else {
+            alert('Invalid input. Please enter a valid number greater than 0.');
+        }
+    }
+</script>
+
+{% endblock %}

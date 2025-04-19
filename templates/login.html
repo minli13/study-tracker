@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block body %}
+    <form action="/login" method="post">
+        <div class="login-page">
+            <div class="section-left">
+                <h1>Study Tracker</h1>
+            </div>
+            <div class="section-right">
+                <div class="login-container">
+                    <h1>Login</h1>
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                        {% if messages %}
+                            <ul>
+                                {% for category, message in messages %}
+                                <li class="{{ category }}">{{ message }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    {% endwith %}
+                    <div>
+                        <input name="username" id="username" placeholder="Username" type="text" required>
+                    </div>
+                    <div>
+                        <input name="password" id="password" placeholder="Password" type="password" required>
+                    </div>
+                    <div class="remember-container">
+                        <label><input name="remember" id="remember" type="checkbox">  Remember Me</label>
+                    </div>
+                    <button id="login-submit-btn" type="submit" class="btn btn-primary" type="button">Log In</button>
+                    <hr class="solid">
+                    <div class="log-reg-link">
+                        <span>Don't have an account?</span><br>
+                        <a href="/register">Sign up here.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}

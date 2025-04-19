@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block body %}
+<form action="/" method="post">
+    <div class="index-container">
+        <h1>Hello, {{ name }}</h1>
+        <table method="POST">
+            <thead>
+                <tr>
+                    <th>Tasks</th>
+                    <th>Due date</th>
+                    <th>Tags</th>
+                    <th id="completion-header">Completion</th>
+                    <th id="completion-date-header" style="display:none">Completed date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Add task button -->
+                <tr class="inputs">
+                    <td><input name="task" placeholder="Task" type="text" autocomplete="off" required></td>
+                    <td><input name="due_date" placeholder="Due date" type="date"></td>
+                    <td><input name="tags" placeholder="Tags" type="text" autocomplete="off"></td>
+                    <td><button type="submit" name="action" value="add_task" class="btn btn-primary">Add task</button></td>
+                </tr>
+                <!-- Display tasks -->
+                {% for task in tasks %}
+                    <tr class="{% if task[5] == 1 %}completed{% else %}not-completed{% endif %}">
+                        <td>{{ task[2] }}</td>
+                        <td>{{ task[3] }}</td>
+                        <td>{{ task[4] }}</td>
+                        <td class="completion-check"><input name="completion" value="{{ task[0] }}" type="checkbox" data-task-id={{ task[0] }} class="task-checkbox" {% if task[5] == 1 %}checked{% endif %}></td>
+                        <td class="completion-date" style="display:none">{{ task[6] }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <div class="button-container">
+                <!-- Update table button -->
+                <button type="submit" onclick="updateTaskIds(event)" value="update_table" id="update-button" class="btn btn-primary btn-lg">Update table</button>
+                <!-- Show completed tasks button -->
+                <button id="toggleCompleted" value="toggleCompleted" type="button" class="btn btn-primary btn-lg">Show Completed</button>
+                <!-- Show uncompleted tasks button -->
+                <button id="toggleNotCompleted" value="toggleNotCompleted" type="button" style="display:none" class="btn btn-primary btn-lg">Show Tasks</button>
+            </div>
+        </table>
+    </div>
+</form>
+<script>
+    
+    // Button for Show Tasks
+    document.getElementById("toggleNotCompleted").addEventListener("click", function() {
+        document.getElementById("toggleNotCompleted").style.display = 'none';
+        document.getElementById("toggleCompleted").style.display = 'inline';
+
+        // Toggle visibility of tasks
+        const completedRows = document.querySelectorAll(".completed");
+        completedRows.forEach(row => {
+            row.style.display = '';
+        });
+        const notCompletedRows = document.querySelectorAll(".not-completed");
+        notCompletedRows.forEach(row => {
+            row.style.display = "table-row";
+        });
+
+        // Show completion column
+        const completionColumnCells = document.querySelectorAll(".task-checkbox")
+        completionColumnCells.forEach(cell => {
+            cell.style.display = "";
+        });
+
+        // Change completion header to completion
+        const completionHeader = document.getElementById("completion-header")
+        completionHeader.style.display = ""
+        const completionDateHeader = document.getElementById("completion-date-header") 
+        completionDateHeader.style.display = "none";
+
+        // Show completion checks 
+        const completedChecksRows = document.querySelectorAll(".completion-check");
+        completedChecksRows.forEach(row => {
+            row.style.display = "";
+        });
+
+        // Hide completion dates
+        const completedDateRow = document.querySelectorAll(".completion-date");
+        completedDateRow.forEach(row => {
+            row.style.display = "none";
+        });
+
+        // Show input boxes
+        const inputRow = document.querySelector(".inputs")
+        inputRow.style.display = "table-row";
+
+        // Show update button
+        const updateButton = document.getElementById("update-button")
+        updateButton.style.display = "";
+    });
+
+
+    // Button for Show Completion
+    document.getElementById("toggleCompleted").addEventListener("click", function() {
+        document.getElementById("toggleNotCompleted").style.display = 'inline';
+        document.getElementById("toggleCompleted").style.display = 'none';
+
+        // Toggle visibility of completed tasks
+        const completedRows = document.querySelectorAll(".completed");
+        completedRows.forEach(row => {
+            row.style.display = "table-row";
+        });
+        const notCompletedRows = document.querySelectorAll(".not-completed");
+        notCompletedRows.forEach(row => {
+            row.style.display = "none";
+        });
+
+
+        // Hide completion column
+        const completionColumnCells = document.querySelectorAll(".completion-check")
+        completionColumnCells.forEach(cell => {
+            cell.style.display = "none";
+        });
+        
+        // Change completion header to completed date
+        const completionHeader = document.getElementById("completion-header")
+        completionHeader.style.display = "none";
+        const completionDateHeader = document.getElementById("completion-date-header") 
+        completionDateHeader.style.display = "";
+
+        // Show completion dates
+        const completedDateRow = document.querySelectorAll(".completion-date");
+        completedDateRow.forEach(row => {
+            row.style.display = "";
+        });
+
+        // Hide input boxes
+        const inputRow = document.querySelector(".inputs")
+        inputRow.style.display = "none";
+
+        // Hide update button
+        const updateButton = document.getElementById("update-button")
+        updateButton.style.display = "none";
+    });
+
+    // Get all previous checked
+    let previousCheckedTasks = new Set();
+    function queryCompletedTasks() {
+        document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+            const taskId = checkbox.dataset.taskId;
+            previousCheckedTasks.add(taskId); 
+        });
+        console.log("These are the previous checked tasks: ");
+        console.log(previousCheckedTasks);
+    }
+    queryCompletedTasks();
+
+    // Read user's checks
+    let currentCheckedTasks = new Set();
+    function setupCheckboxListeners() {
+        // Loop through each checkbox and attach the event listener
+        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('click', () => {
+                // Clear the set before updating it
+                currentCheckedTasks.clear();
+                // Get all checked checkboxes
+                document.querySelectorAll('.task-checkbox:checked').forEach(checkbox => {
+                    let checkedTaskId = checkbox.dataset.taskId;
+                    currentCheckedTasks.add(checkedTaskId);
+                });
+                console.log("These are the current checked tasks: ");
+                console.log(currentCheckedTasks);
+            });
+        });
+    }
+
+    setupCheckboxListeners();
+
+    // Log the checked tasks
+    console.log("Initial checked tasks: ", currentCheckedTasks);
+
+    // Send only the updated tasks (newly checked or unchecked)
+    function updateTaskIds(event) {
+        event.preventDefault(); // Prevent the default form submission
+        let changedTasks = new Set(); 
+        for (let elem of currentCheckedTasks) { 
+            if (!previousCheckedTasks.has(elem)) {
+                changedTasks.add(elem); 
+            } 
+        } 
+        console.log(changedTasks);
+        updateDatabase(document.querySelector('form'), changedTasks);
+    }
+
+    // Update the database with the task IDs
+    function updateDatabase(form, changedTasks) {
+        // Convert the set to an array
+        let updatedTaskIds = Array.from(changedTasks)
+        console.log(updatedTaskIds);
+        fetch('/update_database', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ taskIds: updatedTaskIds })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log("Database update response:", data);
+            form.submit();
+        })
+        .catch(err => console.error("Error updating database:", err));
+    }
+</script>
+{% endblock %}
+

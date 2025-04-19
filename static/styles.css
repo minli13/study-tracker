@@ -1,0 +1,328 @@
+:root {
+    --primary-color: rgb(171, 177, 183); /* background, active tab, login background  */
+    --secondary-color: rgb(208, 215, 221); /* nav-bar, table header */
+    --accent-color: rgb(156, 163, 169); /* login form, register form, hover */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    margin-top: 0;
+    width: 100%;
+    height: 100vh;
+    overflow-y:auto;
+}
+
+.content {
+    text-align: center;
+    background-color: var(--primary-color);
+    height: 100vh;
+    font-size: 25px;
+    overflow-y: auto;
+}
+
+/* FLASH MESSAGES */
+.error {
+    color: red; 
+}
+
+.success {
+    color: green; 
+}
+
+.flash {
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.flash ul {
+    font-size: 14px;
+    text-align: left;
+    align-self: center;
+    list-style-type: circle;
+}
+
+.flash.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+    font-size: 14px;
+}
+
+/* CHANGE PASSWORD PAGE */
+.change-password-page {
+    background-color: aliceblue;
+    border-radius: 18px;
+    border-style: solid;
+    border-top-width: 40px;
+    width: 30%;
+    margin: auto;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.change-password-page h1{
+    font-size: 30px;
+    font-family: 'Times New Roman', Times, serif;
+}
+
+.change-password-container {
+    align-self: center;
+    margin-bottom: 10px;
+}
+
+.change-password-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* LOGIN AND REGISTER PAGE */
+.login-page, .register-page {
+    display: flex;
+    width: 70%;
+    margin: auto;
+    margin-top: 40px;
+    background-color: aliceblue;
+    border-radius: 18px;
+    border-style: solid;
+    border-top-width: 40px;
+}
+
+.section-left {
+    width: 60%;
+    float: left;
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+}
+
+.section-left h1 {
+    font-size: 50px;
+    margin-top: 150px;
+}
+
+.section-right {
+    width: 40%;
+    float: right;
+}
+
+.login-container, .register-container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    background-color: var(--accent-color);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 20px;
+    margin: 20px;
+}
+
+.login-container ul{
+    padding: 0;
+}
+
+.login-container div, .register-container div {
+    margin-bottom: 10px;
+}
+
+.login-container>div>input, .login-container>button, .register-container>div>input, .register-container>button {
+    border-radius: 5px;
+    padding: 10px;
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+.login-container h1, .register-container h1 {
+    font-size: 25px;
+}
+
+.register-page {
+    overflow-y: auto;
+    margin-bottom: 40px;
+}
+
+.register-input-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.register-container label {
+    font-size: 16px;
+    justify-content: left;
+}
+
+.log-reg-link {
+    font-size: 17px;
+}
+
+input[type=checkbox] {
+    transform: scale(1.5);
+}
+
+hr.solid {
+    background-color: #3e361e;
+    height: 2px;
+    border: none;
+    margin: 10px 0;
+}
+
+/* INDEX AND TIMER PAGE */
+.index-container>h1, .timer-tasks-container h1 {
+    padding-bottom: 10px;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 30px;
+    position: sticky;
+}
+
+.completed {
+    display: none;
+}
+
+#toggleNotCompleted {
+    display: none;
+}
+
+.button-container {
+    padding-bottom: 30px;
+}
+
+.index-container{
+    background-color: aliceblue;
+    border-radius: 18px;
+    border-style: solid;
+    border-top-width: 40px;
+    padding: 20px;
+    margin: 60px 120px;
+}
+
+.index-container, .tasks-list {
+    display: flex;
+    flex-direction: column;
+    font-size: 20px;
+    max-height: 500px;
+    overflow-y: scroll;
+}
+
+.button-container > button {
+    position: sticky
+}
+
+.index-container>table>thead>tr>th, .tasks-list th {
+    text-align: center;
+    position: sticky;
+    top: 0;
+    background-color: var(--secondary-color);
+    z-index: 1;
+}
+
+.index-container table {
+    width: 70%;
+    align-self: center;
+}
+
+.index-container th, .index-container td, .tasks-list th, .tasks-list td {
+    border-bottom: 1px solid black;
+    padding: 10px;
+}
+
+/* NAV BAR in layout.html */
+.nav-bar {
+    background-color: var(--secondary-color);
+}
+
+.nav-bar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+}
+
+.nav-link, .nav-link:visited, .nav-link:hover, .nav-link:active {
+    color: inherit;
+}
+
+.nav-link:hover:not(.active) {
+    background-color: var(--accent-color);
+}
+
+.active {
+    background-color: var(--primary-color);
+}
+
+li {
+    display: inline;
+}
+
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+
+.nav-item-left {
+    float: left;
+}
+
+.nav-item-right {
+    float: right;
+}
+
+/* TIMER PAGE */
+tr:hover {background-color: #D6EEEE;}
+
+.timer-tasks-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    height: 100vh;
+    overflow-y: auto;
+    margin-top: 60px;
+}
+
+.timer-container {
+    width: 40%;
+    height: fit-content;
+    padding: 10px;
+    background-color: aliceblue;
+    border-radius: 18px;
+    border-style: solid;
+    border-top-width: 30px;
+}
+
+.tasks-list {
+    width: 40%;
+    font-size: 15px;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    background-color: aliceblue;
+    border-radius: 18px;
+    border-style: solid;
+    border-top-width: 30px;
+}
+
+.tasks-list button {
+    margin-bottom: 10px;
+}
+
+.tasks-flex-container {
+    display: flex;
+    flex-direction: column-reverse;
+}
+
+#timer {
+    font-size: 50px;
+}

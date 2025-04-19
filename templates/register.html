@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block body %}
+    <form action="/register" method="post">
+        <div class="register-page">
+            <div class="section-left">
+                <h1>Study Tracker</h1>
+            </div>
+            <div class="section-right">
+                <div class="register-container">
+                    <h1>Register</h1>
+                    {% with messages = get_flashed_messages(with_categories=True) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                        <div class="flash {{ category }}">
+                            {{ message|safe }}
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+                    <div class="register-input-container">
+                        <label>Create Username:</label>
+                        <input name="username" placeholder="Enter Username" type="text" autocomplete="off" required>
+                    </div>
+                    <div class="register-input-container">
+                        <label>Create Password:</label>
+                        <input name="password" placeholder="Enter Password" type="password" autocomplete="off" required>
+                    </div>
+                    <div class="register-input-container">
+                        <label>Confirm Password:</label>
+                        <input name="confirm-password" placeholder="Confirm password" type="password" autocomplete="off" required>
+                    </div>
+                    <button id="login-submit-btn" type="submit" class="btn btn-primary">Register</button>
+                    <hr class="solid">
+                    <div class="log-reg-link">
+                        <span>Already have an account?</span><br>
+                        <a href="/login">Sign in here.</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+{% endblock %}
